@@ -2,6 +2,37 @@
 // shorty/helpers.php
 declare(strict_types=1);
 
+/**
+ * Bu dosya bir yardımcı (helper) kütüphanedir.
+ * - Tarayıcıdan DOĞRUDAN açılırsa: login.php / admin.php yönlendirmesi yapar.
+ * - include/require ile kullanılırsa: hiçbir yönlendirme yapmaz.
+ */
+if (
+  // CLI'de çalışıyorsa karışma
+  PHP_SAPI !== 'cli'
+  // Gerçekten bu dosya mı çalıştırılıyor?
+  && isset($_SERVER['SCRIPT_FILENAME'])
+  && basename(__FILE__) === basename((string)$_SERVER['SCRIPT_FILENAME'])
+) {
+  // Oturum kontrolü: auth.php'yi zorunlu dahil etmiyoruz; sade session_start yeterli.
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+  }
+
+  // Çıktı yokken yönlendirmeleri güvenle yapalım
+  header('Content-Type: text/html; charset=UTF-8');
+
+  if (empty($_SESSION['uid'])) {
+    header('Location: login.php');
+    exit;
+  } else {
+    header('Location: admin.php');
+    exit;
+  }
+}
+
+/* ========= Aşağıdan sonrası sadece include/require ile kullanılacak fonksiyonlar ========= */
+
 function client_ip(): ?string {
   // 1) Cloudflare gerçek ziyaretçi IP'si
   if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {

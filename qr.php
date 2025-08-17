@@ -3,6 +3,25 @@
 declare(strict_types=1);
 require __DIR__.'/db.php';
 
+// ==== Doğrudan erişim kontrolü ====
+if (
+  PHP_SAPI !== 'cli'
+  && isset($_SERVER['SCRIPT_FILENAME'])
+  && basename(__FILE__) === basename((string)$_SERVER['SCRIPT_FILENAME'])
+) {
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+  }
+  if (empty($_SESSION['uid'])) {
+    header('Location: login.php');
+    exit;
+  } else {
+    header('Location: admin.php');
+    exit;
+  }
+}
+// ==== Buradan sonrası sadece include/require ile çalışır ====
+
 function shorty_base(): string {
   $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
   $host   = $_SERVER['HTTP_HOST'] ?? 'localhost';
@@ -35,27 +54,21 @@ $file     = $dir.'/qr_'.$slug.'_s'.$size.'.'.$finalExt;
 
 // ---- dosya zaten var mı?
 if (!file_exists($file)) {
-  // Her durumda önce kaynak PNG üretelim / indirelim
   if (!file_exists($pngFile)) {
     $api = 'https://api.qrserver.com/v1/create-qr-code/?size='.($size*50).'x'.($size*50).'&data='.rawurlencode($target);
-    $png = null;
-
-    // allow_url_fopen kapalı olabilir; önce file_get_contents, sonra cURL deneriz
     $png = @file_get_contents($api);
-    if ($png === false) {
-      if (function_exists('curl_init')) {
-        $ch = curl_init($api);
-        curl_setopt_array($ch, [
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_TIMEOUT => 5,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_SSL_VERIFYPEER => true,
-          CURLOPT_SSL_VERIFYHOST => 2,
-          CURLOPT_USERAGENT => 'ShortyQR/1.0',
-        ]);
-        $png = curl_exec($ch);
-        curl_close($ch);
-      }
+    if ($png === false && function_exists('curl_init')) {
+      $ch = curl_init($api);
+      curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 5,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
+        CURLOPT_USERAGENT => 'ShortyQR/1.0',
+      ]);
+      $png = curl_exec($ch);
+      curl_close($ch);
     }
     if ($png === false || $png === null) { http_response_code(502); exit('qr api error'); }
     file_put_contents($pngFile, $png);
@@ -63,11 +76,9 @@ if (!file_exists($file)) {
 
   // İstenen format JPG ise dönüştür
   if ($fmt === 'jpg') {
-    // GD mevcutsa JPG çıkaralım; yoksa PNG’yi servis etmeye devam ederiz
     if (function_exists('imagecreatefrompng') && function_exists('imagejpeg')) {
       $im = @imagecreatefrompng($pngFile);
       if ($im !== false) {
-        // beyaz zemin
         $w = imagesx($im); $h = imagesy($im);
         $bg = imagecreatetruecolor($w, $h);
         $white = imagecolorallocate($bg, 255, 255, 255);
@@ -77,17 +88,14 @@ if (!file_exists($file)) {
         imagedestroy($bg);
         imagedestroy($im);
       } else {
-        // dönüştürülemediyse PNG üzerinden servis verelim
         $file = $pngFile;
         $finalExt = 'png';
       }
     } else {
-      // GD yok; PNG üzerinden servis
       $file = $pngFile;
       $finalExt = 'png';
     }
   } else {
-    // fmt=png
     $file = $pngFile;
   }
 }
@@ -98,15 +106,11 @@ if (!file_exists($file)) { http_response_code(500); exit('qr file missing'); }
 $mtime = filemtime($file) ?: time();
 $etag  = md5($file.$mtime);
 
-// Basit cache header’ları
 header('ETag: "'.$etag.'"');
 header('Last-Modified: '.gmdate('D, d M Y H:i:s', $mtime).' GMT');
 header('Cache-Control: public, max-age=31536000, immutable');
 
 if ($finalExt === 'jpg')  header('Content-Type: image/jpeg');
 else                      header('Content-Type: image/png');
-
-// İndirilebilir yapmak isterseniz (yorum kaldırın):
-// header('Content-Disposition: inline; filename="'.basename($file).'"');
 
 readfile($file);

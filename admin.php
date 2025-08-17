@@ -100,6 +100,7 @@ header nav a{margin-left:8px}
 
     <!-- Sadece index yönlendirmesi (kısaltma ekranı) -->
     <a class="btn ghost" href="index.php">URL Kısalt</a>
+    <a class="btn ghost" href="users.php">Kullanıcı Ekle/Sil</a>
     <a class="btn" href="logout.php">Çıkış Yap</a>
   </nav>
 </header>

@@ -4,6 +4,36 @@ declare(strict_types=1);
 require __DIR__.'/db.php';
 require __DIR__.'/helpers.php';
 
+/**
+ * Doğrudan erişim koruması:
+ * - Bu dosya direkt çağrılmışsa VE geçerli bir slug YOKSA
+ *   oturum yoksa login.php'ye, varsa admin.php'ye yönlendir.
+ * - Geçerli slug varsa normal redirect akışı çalışır (public davranış korunur).
+ */
+if (
+  PHP_SAPI !== 'cli' &&
+  isset($_SERVER['SCRIPT_FILENAME']) &&
+  basename(__FILE__) === basename((string)$_SERVER['SCRIPT_FILENAME'])
+) {
+  $slugCheck = trim($_GET['slug'] ?? '');
+  $isValidSlug = ($slugCheck !== '' && preg_match('/^[A-Za-z0-9_-]{3,32}$/', $slugCheck));
+
+  if (!$isValidSlug) {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+      session_start();
+    }
+    if (empty($_SESSION['uid'])) {
+      header('Location: login.php');
+      exit;
+    } else {
+      header('Location: admin.php');
+      exit;
+    }
+  }
+}
+
+// === Buradan sonrası: GEÇERLİ slug ile normal redirect akışı ===
+
 $slug = trim($_GET['slug'] ?? '');
 if ($slug === '' || !preg_match('/^[A-Za-z0-9_-]{3,32}$/', $slug)) {
   http_response_code(404);

@@ -139,6 +139,8 @@ small{color:#666}
 <header>
   <div class="user">👋 Merhaba, <strong>{$user}</strong></div>
   <nav>
+    <a class="btn ghost" href="admin.php">Admin Panel</a>
+    <a class="btn ghost" href="users.php">Kullanıcı Ekle/Sil</a>
     <a class="btn" href="logout.php">Çıkış Yap</a>
   </nav>
 </header>
