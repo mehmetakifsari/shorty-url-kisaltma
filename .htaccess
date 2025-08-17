@@ -1,0 +1,14 @@
+# /v2/.htaccess
+RewriteEngine On
+RewriteBase /v2/
+
+# Bu dosyaları hariç tut
+RewriteCond %{REQUEST_URI} !^/v2/admin\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/v2/edit\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/v2/index\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/v2/redirect\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/v2/helpers\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/v2/db\.php$ [NC]
+
+# /v2/abc123 -> redirect.php?slug=abc123
+RewriteRule ^([A-Za-z0-9_-]{3,32})$ redirect.php?slug=$1 [L,QSA]
