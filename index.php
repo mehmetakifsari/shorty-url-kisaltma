@@ -119,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && empty($_GET['api'])) {
 <!doctype html>
 <meta charset="utf-8">
 <title>Shorty – Link Kısalt</title>
+<link rel="icon" type="image/svg+xml" href="/v2/images/favicon.svg">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{font-family:system-ui,Arial;max-width:820px;margin:40px auto;padding:0 16px;background:#f7f8fb}

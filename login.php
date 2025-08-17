@@ -53,6 +53,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <head>
   <meta charset="utf-8">
   <title><?= $hasUsers ? 'Giriş Yap' : 'İlk Kurulum' ?></title>
+  <link rel="icon" type="image/svg+xml" href="/v2/images/favicon.svg">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/login.css">
 </head>

@@ -46,6 +46,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <!doctype html>
 <meta charset="utf-8">
 <title>Kullanıcılar</title>
+<link rel="icon" type="image/svg+xml" href="/v2/images/favicon.svg">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 body{font-family:system-ui,Arial;max-width:1000px;margin:30px auto;padding:0 16px}

@@ -45,6 +45,7 @@ header('Content-Type: text/html; charset=UTF-8');
 <!doctype html>
 <meta charset="utf-8">
 <title>Shorty Admin</title>
+<link rel="icon" type="image/svg+xml" href="/v2/images/favicon.svg">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 :root{--b:#4a67e8;--bg:#fff;--mut:#666}

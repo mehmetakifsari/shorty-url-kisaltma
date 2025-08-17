@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Link icon">
+  <style>
+    :root { color-scheme: light dark; }
+    .icon { stroke: currentColor; fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+  <g class="icon">
+    <!-- left chain segment -->
+    <path d="M25 39l-3.5-3.5a9 9 0 0 1 0-12.73l7.07-7.07a9 9 0 0 1 12.73 0L45 18"/>
+    <!-- right chain segment -->
+    <path d="M39 25l3.5 3.5a9 9 0 0 1 0 12.73l-7.07 7.07a9 9 0 0 1-12.73 0L19 46"/>
+    <!-- connector curve -->
+    <path d="M28 32l8-8M28 36l8-8"/>
+  </g>
+</svg>
